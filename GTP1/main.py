@@ -23,11 +23,12 @@ class Perceptron:
                 y_pred = self.predict(self.X[i])
                 error = self.y[i] - y_pred
                 self.w += self.lr * error * self.X[i]
-            
+
             # Validación
             tasa_error = self.test_index(ind_validacion)
-            # print(f"Época {epoca+1}, Tasa de error: {tasa_error*100:.2f}%")
-            
+            print(f"Época {epoca+1}, Tasa de error: {tasa_error*100:.2f}%")
+            self.graficar(self.X, self.y, f"Datos - Después de la época {epoca}")
+
             if(tasa_error <= tasa_aceptable):
                 print(f"Tasa de error aceptable alcanzada: {tasa_error*100:.2f}% en la época {epoca+1}")
                 break
@@ -121,12 +122,12 @@ def routine(perceptron, training_route, test_route, titulo, tasa_aceptable=0):
 
 if __name__ == "__main__":
     # Ej 2 - 
-    perceptronOR = Perceptron(cant_entradas=2,learning_rate=0.1, epoca_max=1000)
+    perceptronOR = Perceptron(cant_entradas=2,learning_rate=0.1, epoca_max=10)
     routine(perceptronOR, "OR_trn.csv", "OR_tst.csv", "OR", 0)
-    perceptronXOR = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=1000)
+    perceptronXOR = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=10)
     routine(perceptronXOR, "XOR_trn.csv", "XOR_tst.csv", "XOR", 0)
     # Ej 3 -
-    perceptronOR50 = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=1000)
+    perceptronOR50 = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=10)
     routine(perceptronOR50, "OR_50_trn.csv", "OR_50_tst.csv", "OR-50", 0)
-    perceptronOR90 = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=1000)
+    perceptronOR90 = Perceptron(cant_entradas=2, learning_rate=0.1, epoca_max=10)
     routine(perceptronOR90, "OR_90_trn.csv", "OR_90_tst.csv", "OR-90", 0)

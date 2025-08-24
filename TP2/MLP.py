@@ -73,7 +73,7 @@ class MLP:
                 self.backward_pass(x[i,:], y[i])
                 self.ajuste_pesos(x[i,:])
                 if(salida*y[i] < 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
-            print(f"Epoca {epoca+1}, Tasa de error: {error}")
+            #print(f"Epoca {epoca+1}, Tasa de error: {error}")
 
     def test(self, x, y):
         error = 0
@@ -91,5 +91,9 @@ if __name__ == "__main__":
     
     mlp.entrenamiento(x,y)
     
+    [x,y] = loadData("XOR_tst.csv")  # Cargar datos de entrada
+    
+    mlp.test(x,y)
+    print("Tasa de error en test:", mlp.test(x,y))
     #salida = mlp.forward_pass(x[0,:])
     #print(x[0,:]," -> ",y[0],": ",salida)

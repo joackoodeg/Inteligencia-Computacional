@@ -72,14 +72,14 @@ class MLP:
                 salida = self.forward_pass(x[i,:])
                 self.backward_pass(x[i,:], y[i])
                 self.ajuste_pesos(x[i,:])
-                if(salida*y[i] > 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
+                if(salida*y[i] < 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
             print(f"Epoca {epoca+1}, Tasa de error: {error}")
 
     def test(self, x, y):
         error = 0
         for i in range(x.shape[0]):
             salida = self.forward_pass(x[i,:])
-            if(salida*y[i] > 0): error+=1 #Si la salida y la deseada son del mismo signo, es correcto?
+            if(salida*y[i] < 0): error+=1 #Si la salida y la deseada son del mismo signo, es correcto?
         return error/x.shape[0]
 
 if __name__ == "__main__":

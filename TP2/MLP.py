@@ -2,16 +2,23 @@ import numpy as np
 import pandas as pd
 from graficacion import Grafica
 
+def maxpositive_to_one_rest_to_neg(vec): #Si el maximo es positivo lo pone en 1 y el resto en -1, si el maximo es negativo pone todo en -1
+    index_max = np.argmax(vec)
+    if vec[index_max] < 0: return -1 * np.ones_like(vec)
+    aux = -1 * np.ones_like(vec)
+    aux[index_max] = 1
+    return aux            
+
 def sigmoid(x):
     return np.tanh(x)
 
 def sigmoid_derivative(x):
     return (1+x)*(1-x)  #Derivada de tanh
 
-def loadData(route):
+def loadData(route, cant_entradas):
     data = pd.read_csv(route)
-    x = data.iloc[:, :-1].values  # Todas las filas y todas las columnas menos la última  
-    y = data.iloc[:,-1].values  # Solo la última columna
+    x = data.iloc[:, :cant_entradas].values  # Todas las filas y todas las columnas menos la última
+    y = data.iloc[:,cant_entradas:].values  # Solo la última columna
     return [x,y]
 
 class capa:
@@ -22,7 +29,6 @@ class capa:
         self.salidas = [] #Lista de las ultimas salidas de cada neurona
         self.grad_local = [] #Lista de errores locales de cada neurona
         
-        #self.bias = np.random.uniform(-0.5, 0.5, num_neuronas) ??
 
 class MLP:
     def __init__(self, lista_capas, cant_entradas, lr=0.01, epoca_max=100): #lista_capas es una lista con la cantidad de neuronas por capa
@@ -45,8 +51,8 @@ class MLP:
             entrada_capa = np.insert(salida_capa, 0, -1)  # Agregar bias para la siguiente capa
         return salida_capa
     
-    def backward_pass(self, x, y_D):
-        e = y_D - self.capas[-1].salidas
+    def backward_pass(self, y_D):
+        e = y_D - self.capas[-1].salidas 
         for i in reversed(range(len(self.capas))):
             capa = self.capas[i]
             if i == len(self.capas) - 1:
@@ -68,19 +74,27 @@ class MLP:
     
     def entrenamiento(self,x,y):
         for epoca in range(self.epoca_max):
-            error = 0
+            error_class = 0
+            error_cuad = 0
             for i in range(x.shape[0]):
                 salida = self.forward_pass(x[i,:])
-                self.backward_pass(x[i,:], y[i])
+                self.backward_pass(y[i, :]) #
                 self.ajuste_pesos(x[i,:])
-                if(salida*y[i] < 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
-            print(f"Epoca {epoca+1}, Tasa de error: {error}")
+
+                salida_arreglada = maxpositive_to_one_rest_to_neg(salida)
+                if(np.any(salida_arreglada-y[i] != 0)): error_class+=1 
+
+                e = y[i,:] - salida
+                error_cuad += np.sum(e**2)
+            print(f"Epoca {epoca+1}, Error de clasificacion: {error_class}, Error de cuadratico medio: {error_cuad/x.shape[0]}") 
+            #a veces dan valores raros, revisar
 
     def test(self, x, y):
         error = 0
         for i in range(x.shape[0]):
             salida = self.forward_pass(x[i,:])
-            if(salida*y[i] < 0): error+=1 #Si la salida y la deseada son del mismo signo, es correcto?
+            salida_arreglada = maxpositive_to_one_rest_to_neg(salida)
+            if(np.any(salida_arreglada-y[i] != 0)): error+=1 
         return error/x.shape[0]
 
 if __name__ == "__main__":
@@ -88,21 +102,21 @@ if __name__ == "__main__":
     lista_capas = [2,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
     cant_entradas = 2
     mlp = MLP(lista_capas, cant_entradas,0.1,10)
-    [x,y] = loadData("XOR_trn.csv")  # Cargar datos de entrada
+    [x,y] = loadData("XOR_trn.csv",cant_entradas)  # Cargar datos de entrada
     
     mlp.entrenamiento(x,y)
 
     # Graficar datos de entrenamiento con heatmap
-    x_bias_train = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
-    grafica_train = Grafica()
-    grafica_train.graficar(x_bias_train, y, titulo="MLP - Datos de Entrenamiento", predict_func=lambda entrada: mlp.forward_pass(entrada))
+    #x_bias_train = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
+    #grafica_train = Grafica()
+    #grafica_train.graficar(x_bias_train, y, titulo="MLP - Datos de Entrenamiento", predict_func=lambda entrada: mlp.forward_pass(entrada))
     
-    [x,y] = loadData("XOR_tst.csv")  # Cargar datos de entrada
+    [x,y] = loadData("XOR_tst.csv",cant_entradas)  # Cargar datos de entrada
     
     mlp.test(x,y)
     print("Tasa de error en test:", mlp.test(x,y))
 
     # Graficar los datos de testeo con heatmap
-    x_bias_test = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
-    grafica_test = Grafica()
-    grafica_test.graficar(x_bias_test, y, titulo="MLP - Datos de Testeo", predict_func=lambda entrada: mlp.forward_pass(entrada))
+    #x_bias_test = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
+    #grafica_test = Grafica()
+    #grafica_test.graficar(x_bias_test, y, titulo="MLP - Datos de Testeo", predict_func=lambda entrada: mlp.forward_pass(entrada))

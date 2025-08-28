@@ -9,8 +9,8 @@ if __name__ == "__main__":
     # [100, 1] -> 0.01, 200 -> 1.2%
     lista_capas = [100,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
     cant_entradas = 2
+    [x,y] = loadData("concent_trn.csv",cant_entradas)  # Cargar datos de entrada
     mlp = MLP(lista_capas, cant_entradas,0.01,200)
-    [x,y] = loadData("concent_trn.csv")  # Cargar datos de entrada
     
     mlp.entrenamiento(x,y)
 

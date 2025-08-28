@@ -8,10 +8,11 @@ def sigmoid(x):
 def sigmoid_derivative(x):
     return (1+x)*(1-x)  #Derivada de tanh
 
-def loadData(route):
+def loadData(route, cant_entradas):
     data = pd.read_csv(route)
-    x = data.iloc[:, :-1].values  # Todas las filas y todas las columnas menos la última  
-    y = data.iloc[:,-1].values  # Solo la última columna
+    x = data.iloc[:, :cant_entradas].values  # Todas las filas y todas las columnas menos la última
+    y = data.iloc[:,cant_entradas:].values  # Solo la última columna
+    print("q")
     return [x,y]
 
 class capa:
@@ -45,8 +46,8 @@ class MLP:
             entrada_capa = np.insert(salida_capa, 0, -1)  # Agregar bias para la siguiente capa
         return salida_capa
     
-    def backward_pass(self, x, y_D):
-        e = y_D - self.capas[-1].salidas
+    def backward_pass(self, y_D):
+        e = y_D - self.capas[-1].salidas 
         for i in reversed(range(len(self.capas))):
             capa = self.capas[i]
             if i == len(self.capas) - 1:
@@ -71,7 +72,7 @@ class MLP:
             error = 0
             for i in range(x.shape[0]):
                 salida = self.forward_pass(x[i,:])
-                self.backward_pass(x[i,:], y[i])
+                self.backward_pass(y[i, :]) #
                 self.ajuste_pesos(x[i,:])
                 if(salida*y[i] < 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
             print(f"Epoca {epoca+1}, Tasa de error: {error}")

@@ -26,13 +26,14 @@ class Grafica:
         # Si no hay pesos pero hay función de predicción, graficar heatmap
         elif predict_func is not None:
             self._dibujar_heatmap(predict_func)
-        
+
         plt.xlabel('Entrada 1')
         plt.ylabel('Entrada 2') 
         plt.title(titulo)
         plt.legend()
         plt.grid(True, alpha=0.3)
         plt.show()
+    
     def _dibujar_heatmap(self, predict_func):
         # Crear una malla de puntos en el espacio de entrada
         x_min, x_max = -3, 3

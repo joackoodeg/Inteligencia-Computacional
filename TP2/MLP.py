@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from graficacion import Grafica
 
 def sigmoid(x):
     return np.tanh(x)
@@ -73,7 +74,7 @@ class MLP:
                 self.backward_pass(x[i,:], y[i])
                 self.ajuste_pesos(x[i,:])
                 if(salida*y[i] < 0): error+=1  #Si la salida y la deseada son del mismo signo, es correcto?
-            #print(f"Epoca {epoca+1}, Tasa de error: {error}")
+            print(f"Epoca {epoca+1}, Tasa de error: {error}")
 
     def test(self, x, y):
         error = 0
@@ -86,14 +87,22 @@ if __name__ == "__main__":
     # Ejemplo de uso
     lista_capas = [2,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
     cant_entradas = 2
-    mlp = MLP(lista_capas, cant_entradas,0.1,100)
+    mlp = MLP(lista_capas, cant_entradas,0.1,10)
     [x,y] = loadData("XOR_trn.csv")  # Cargar datos de entrada
     
     mlp.entrenamiento(x,y)
+
+    # Graficar datos de entrenamiento con heatmap
+    x_bias_train = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
+    grafica_train = Grafica()
+    grafica_train.graficar(x_bias_train, y, titulo="MLP - Datos de Entrenamiento", predict_func=lambda entrada: mlp.forward_pass(entrada))
     
     [x,y] = loadData("XOR_tst.csv")  # Cargar datos de entrada
     
     mlp.test(x,y)
     print("Tasa de error en test:", mlp.test(x,y))
-    #salida = mlp.forward_pass(x[0,:])
-    #print(x[0,:]," -> ",y[0],": ",salida)
+
+    # Graficar los datos de testeo con heatmap
+    x_bias_test = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
+    grafica_test = Grafica()
+    grafica_test.graficar(x_bias_test, y, titulo="MLP - Datos de Testeo", predict_func=lambda entrada: mlp.forward_pass(entrada))

@@ -19,7 +19,7 @@ def sigmoid_derivative(x):
 def loadData(route, cant_entradas):
     data = pd.read_csv(route)
     x = data.iloc[:, :cant_entradas].values  # Todas las filas y "cant_entradas" columnas 
-    y = data.iloc[:,cant_entradas:].values  # Todas las filas y las columnas restantes
+    y = data.iloc[:,cant_entradas:].values  # Todas las filas y las columnas restantes, aplanado
     return [x,y]
 
 class capa:
@@ -110,26 +110,3 @@ class MLP:
             salida_arreglada = maxpositive_to_one_rest_to_neg(salida)
             if(np.any(salida_arreglada-y[i] != 0)): error+=1 
         return error/x.shape[0]
-
-if __name__ == "__main__":
-    lista_capas = [2,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
-    cant_entradas = 2
-    mlp = MLP(lista_capas, cant_entradas,0.1,10)
-    [x,y] = loadData("XOR_trn.csv",cant_entradas)  # Cargar datos de entrada
-    
-    mlp.entrenamiento(x,y)
-
-    # Graficar datos de entrenamiento con heatmap
-    #x_bias_train = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
-    #grafica_train = Grafica()
-    #grafica_train.graficar(x_bias_train, y, titulo="MLP - Datos de Entrenamiento", predict_func=lambda entrada: mlp.forward_pass(entrada))
-    
-    [x,y] = loadData("XOR_tst.csv",cant_entradas)  # Cargar datos de entrada
-    
-    mlp.test(x,y)
-    print("Tasa de error en test:", mlp.test(x,y)*100,"%")
-
-    # Graficar los datos de testeo con heatmap
-    #x_bias_test = np.hstack((np.ones((x.shape[0], 1)) * -1, x))
-    #grafica_test = Grafica()
-    #grafica_test.graficar(x_bias_test, y, titulo="MLP - Datos de Testeo", predict_func=lambda entrada: mlp.forward_pass(entrada))

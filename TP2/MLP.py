@@ -74,21 +74,34 @@ class MLP:
             entrada_capa = np.insert(capa.salidas, 0, -1)  # Agregar bias para la siguiente capa
     
     def entrenamiento(self,x,y):
+        vec_error_class = []
+        vec_error_cuad = []
         for epoca in range(self.epoca_max):
             error_class = 0
             error_cuad = 0
-            for i in range(x.shape[0]): #Para cada patron de entrenamiento
+            for i in range(int(x.shape[0]*0.8)): #Para cada patron de entrenamiento
                 salida = self.forward_pass(x[i,:]) #Calculo de salida
                 self.backward_pass(y[i, :]) #Calculo de gradientes
                 self.ajuste_pesos(x[i,:]) #Ajuste de pesos
-
+            
+            cant_validacion = 0
+            for i in range(int(x.shape[0]*0.8), x.shape[0]): #Validacion
+                salida = self.forward_pass(x[i,:]) #Calculo de salida
                 salida_arreglada = maxpositive_to_one_rest_to_neg(salida)
                 if(np.any(salida_arreglada-y[i] != 0)): error_class+=1 #Error de clasificacion, todas las salidas corregidas deben ser iguales
 
                 e = y[i,:] - salida #Señal de error
-                error_cuad += np.sum(e**2) #Error cuadratico 
-            print(f"Epoca {epoca+1}, Error de clasificacion: {error_class}, Error de cuadratico medio: {error_cuad/x.shape[0]}") 
-            #a veces dan valores raros, revisar
+                error_cuad += np.sum(e**2)/e.shape[0] #Error cuadratico
+                
+                #Que sucede cuando e es un vector?
+                cant_validacion += 1
+            
+            vec_error_class.append(error_class)
+            vec_error_cuad.append((error_cuad/cant_validacion)*100) 
+            print(f"Epoca {epoca+1}, Error de clasificacion: {error_class}, Error cuadratico medio: {(error_cuad/cant_validacion)*100}%") 
+            if(error_class == 0 and error_cuad == 0): break
+
+        return vec_error_class, vec_error_cuad
 
     def test(self, x, y): #Devuelve el error de clasificacion
         error = 0
@@ -114,7 +127,7 @@ if __name__ == "__main__":
     [x,y] = loadData("XOR_tst.csv",cant_entradas)  # Cargar datos de entrada
     
     mlp.test(x,y)
-    print("Tasa de error en test:", mlp.test(x,y))
+    print("Tasa de error en test:", mlp.test(x,y)*100,"%")
 
     # Graficar los datos de testeo con heatmap
     #x_bias_test = np.hstack((np.ones((x.shape[0], 1)) * -1, x))

@@ -6,11 +6,11 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import BaggingClassifier
 
 if __name__ == "__main__":
-    X,y = datasets.load_(return_X_y=True)
+    X, y = datasets.load_wine(return_X_y=True)
 
     kf = model_selection.KFold(n_splits=5,shuffle=True)
 
-    exactitudes = np.zeros((5,6))
+    exactitudes = np.zeros((5,2))
     for i,(train_i,test_i) in enumerate(kf.split(X)):
         
         adb = AdaBoostClassifier()

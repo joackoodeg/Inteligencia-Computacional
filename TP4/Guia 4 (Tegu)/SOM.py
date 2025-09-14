@@ -9,12 +9,14 @@ def loadData(route):
 
 class SOM:
     def __init__(self, cant_entradas, filas_mapa, columnas_mapa):
+        #Cada fila es el vector de pesos de una neurona, cada columna son los pesos asociados a una entrada
         self.W = np.random.uniform(-0.5,0.5,size=(filas_mapa*columnas_mapa,cant_entradas))
+
         self.filas = filas_mapa
         self.columnas = columnas_mapa
-        self.mapa_neuronas = np.arange(0, filas_mapa * columnas_mapa ).reshape(filas_mapa, columnas_mapa)
+        self.mapa_neuronas = np.arange(0, filas_mapa * columnas_mapa ).reshape(filas_mapa, columnas_mapa) #Matriz que indica la posicion de cada neurona en el mapa
     
-    def determinar_ganador(self,x):
+    def determinar_ganador(self,x): #Determina el indice de la neurona ganadora (la mas cercana al dato x)
         dist_min = float('inf')
         ind = -1
         for i in range(self.W.shape[0]):
@@ -30,11 +32,14 @@ class SOM:
         fil = indices[0][0]
         col = indices[1][0]
         
-        fV1 = max(0,fil-radio_vecindad)
+        #La submatriz va de las filas fV1 a fV2-1 y de las columnas cV1 a cV2-1
+        fV1 = max(0,fil-radio_vecindad) 
         fV2 = min(self.filas,fil+radio_vecindad+1)
+
         cV1 = max(0,col-radio_vecindad)
         cV2 = min(self.columnas,col+radio_vecindad+1)
-        vecindad = self.mapa_neuronas[fV1:fV2,cV1:cV2]
+        
+        vecindad = self.mapa_neuronas[fV1:fV2,cV1:cV2] #Submatriz del mapa de neuronas que representa la vecindad y cuyo centro es la neurona ganadora
 
         for i, j in np.ndindex(vecindad.shape):  
             k = vecindad[i, j]
@@ -45,13 +50,14 @@ class SOM:
     def entrenamiento(self,X,epoca_max = 1000):
         paso = 10
 
-        #Ordenamiento global
-        for i in range(0,epoca_max):
+        #Ordenamiento global: al principio los datos se mueven mucho hacia la distribucion de los datos y luego se estabilizan?
+        for i in range(0,epoca_max): 
             if(i%paso==0):
                 graficar_som(self.W,self.mapa_neuronas,X,titulo="SOM - Epoca "+str(i))
             
             radio_vecindad = int(max(self.columnas,self.filas)/2)
             velocidad_aprendizaje = 0.9
+            
             for j in range(X.shape[0]):
                 indG = self.determinar_ganador(X[j,:])
                 self.adaptacion(X[j,:],indG,radio_vecindad,velocidad_aprendizaje)
@@ -89,7 +95,14 @@ class SOM:
             if(i%paso==0):
                 graficar_som(self.W,self.mapa_neuronas,X,titulo="SOM - Epoca "+str(i))
 
-        graficar_voronoi_som(self.W,X)
+        #graficar_voronoi_som(self.W,X)
+    
+    def test(self,X):
+        pertenece = np.zeros(X.shape[0])
+        for i in range(X.shape[0]): #para cada dato
+            ind_cluster = self.determinar_ganador(X[i,:])
+            pertenece[i] = ind_cluster
+        return pertenece
 
 if __name__ == "__main__":
     route = 'te.csv'

@@ -10,7 +10,7 @@ def loadData(route):
 class K_means:
     def __init__(self):
         self.medias = []
-        self.pertenece = []
+        self.pertenece = [] #vector que indica a que cluster pertenece cada dato utilizado en el entrenamiento
     
     def entrenamiento(self,k,X):
         for i in range(k): #inicializar medias con los primeros k datos 
@@ -42,8 +42,21 @@ class K_means:
                         cant+=1
                 self.medias[j] = sum/cant
             
-            graficar_clusters(X, self)
+            #graficar_clusters(X, self)
             print("Cambios: ",cambios)
+    
+    def test(self,X):
+        pertenece = np.zeros(X.shape[0])
+        for i in range(X.shape[0]): #para cada dato
+            dist_min = float('inf')
+            ind_cluster = -1
+            for j in range(len(self.medias)): #buscar el cluster mas cercano
+                dist = np.linalg.norm(X[i,:]-self.medias[j])
+                if dist < dist_min:
+                    dist_min = dist
+                    ind_cluster = j
+            pertenece[i] = ind_cluster
+        return pertenece
 
 
 if __name__ == "__main__":

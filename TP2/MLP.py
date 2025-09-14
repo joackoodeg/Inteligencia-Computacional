@@ -93,7 +93,6 @@ class MLP:
                 e = y[i,:] - salida #Señal de error
                 error_cuad += np.sum(e**2)/e.shape[0] #Error cuadratico
                 
-                #Que sucede cuando e es un vector?
                 cant_validacion += 1
             
             vec_error_class.append(error_class)

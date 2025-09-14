@@ -43,7 +43,6 @@ if __name__ == "__main__":
         exactitudes[i,5] = tree.score(X[test_i],y[test_i])
 
 
-
     print("MLP: Promedio: ", np.mean(exactitudes[:,0])," Varianza: ", np.var(exactitudes[:,0]))
     print("NBY: Promedio: ", np.mean(exactitudes[:,1])," Varianza: ", np.var(exactitudes[:,1]))
     print("LDA: Promedio: ", np.mean(exactitudes[:,2])," Varianza: ", np.var(exactitudes[:,2]))

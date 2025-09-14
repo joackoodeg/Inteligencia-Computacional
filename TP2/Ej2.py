@@ -8,11 +8,11 @@ if __name__ == "__main__":
     # [10,50, 1] - 0.01, 1000 -> 1.6 %
     # [50, 1] -> 0.01, 200 -> 1.7%
     # [100, 1] -> 0.01, 200 -> 1.2%
-    lista_capas = [50,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
+    lista_capas = [2,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
     cant_entradas = 2
     [x,y] = loadData("concent_trn.csv",cant_entradas)  # Cargar datos de entrada
     
-    mlp = MLP(lista_capas, cant_entradas,0.01,100)
+    mlp = MLP(lista_capas, cant_entradas,0.05,200)
     
     vec_error_class, vec_error_cuad = mlp.entrenamiento(x,y)
     vec_error_class = np.array(vec_error_class)*100/vec_error_class[0] # Normalizo para que inicie en 100

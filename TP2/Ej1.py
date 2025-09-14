@@ -3,7 +3,7 @@ from MLP import MLP, loadData
 if __name__ == "__main__":
     lista_capas = [2,1]  # 2 neuronas en la capa oculta, 1 en la capa de salida
     cant_entradas = 2
-    mlp = MLP(lista_capas, cant_entradas,0.1,10)
+    mlp = MLP(lista_capas, cant_entradas,0.01,100)
     [x,y] = loadData("XOR_trn.csv",cant_entradas)  # Cargar datos de entrada
     
     mlp.entrenamiento(x,y)

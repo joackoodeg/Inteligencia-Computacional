@@ -10,6 +10,24 @@ class SOM:
         # pesos iniciales aleatorios en [-1,1]
         self.W = rng.uniform(-1, 1, size=(rows, cols, dim))
 
+    def routine(self, X):
+        # Fase 1
+        self.lr = 0.9
+        self.r_init = self.rows // 2        # radio ≈ medio mapa
+        self.train(X, epochs=1000)
+
+        # Fase 2: reducimos lr y radius poco a poco
+        for t in range(1000):
+            # decaimiento lineal
+            self.lr = 0.9 - (0.8 * (t / 1000))      # de 0.9 a ~0.1
+            self.r_init = int((self.rows // 2) * (1 - t / 1000)) + 1
+            self.train(X, epochs=1)
+
+        # Fase 3
+        self.lr = 0.05
+        self.r_init = 0   # solo la ganadora
+        self.train(X, epochs=3000)
+
     def find(self, x):
         """Busca la neurona más cercana a x"""
         min_dist = float("inf")

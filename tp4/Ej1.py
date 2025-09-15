@@ -2,7 +2,7 @@ from som import SOM
 import pandas as pd
 
 def routine(route):
-# Cargar datos
+    # Cargar datos
     data = pd.read_csv(route, header=None).values   # 2 columnas (x,y)
 
     # Crear SOM

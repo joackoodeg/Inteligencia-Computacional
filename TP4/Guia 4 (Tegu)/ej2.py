@@ -29,8 +29,8 @@ if __name__ == "__main__":
     input("Presione Enter para continuar con SOM...")
     
     #SOM
-    som = SOM(4,5,5)
-    som.entrenamiento(X_trn,epoca_max=500)
+    som = SOM(4,1,3)
+    som.entrenamiento(X_trn,epoca_max=250)
     som_test = som.test(X_tst) 
     input("Presione Enter para continuar con la matriz de contingencia...")
 

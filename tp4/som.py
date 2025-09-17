@@ -66,6 +66,31 @@ class SOM:
                 for i, j in self.neighbors(row, col, radius):
                     self.W[i, j] += lr * (x - self.W[i, j])
 
+    def evaluate(self, X, y, num_classes=3):
+        # Inicializar estructuras
+        labels = []
+        activations = np.zeros((self.rows, self.cols), dtype=int)
+        class_counts = np.zeros((self.rows, self.cols, num_classes), dtype=int)
+
+        # 1. Recorrer todas las muestras
+        for idx, sample in enumerate(X):
+            row, col = self.find(sample)
+            labels.append(row * self.cols + col)
+
+            # contar activación
+            activations[row, col] += 1
+
+            # sumar 1 al contador de la clase correspondiente
+            class_counts[row, col, y[idx]] += 1
+
+        labels = np.array(labels)
+
+        # 2. Clase mayoritaria por neurona
+        majority_class = np.argmax(class_counts, axis=2)   # el índice con más votos
+        majority_class[activations == 0] = -1              # neuronas vacías → -1
+
+        return labels, activations, majority_class
+
 
     def plot(self, X, title="SOM"):
         # 1. Para cada dato, buscar la neurona ganadora (BMU)

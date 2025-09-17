@@ -42,7 +42,7 @@ class K_means:
                         cant+=1
                 self.medias[j] = sum/cant
             
-            #graficar_clusters(X, self)
+            graficar_clusters(X, self)
             print("Cambios: ",cambios)
     
     def test(self,X):

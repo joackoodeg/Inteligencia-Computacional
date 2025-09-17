@@ -68,13 +68,27 @@ class SOM:
 
 
     def plot(self, X, title="SOM"):
-        plt.scatter(X[:,0], X[:,1], c="lightgray", s=10)
-        # pesos
+        # 1. Para cada dato, buscar la neurona ganadora (BMU)
+        labels = []
+        for x in X:
+            row, col = self.find(x)
+            labels.append(row * self.cols + col)  # índice de la neurona ganadora
+
+        labels = np.array(labels)
+
+        # 2. Dibujar los datos, coloreados por su BMU
+        plt.scatter(X[:,0], X[:,1], c=labels, cmap="tab20", s=10)
+
+        # 3. Dibujar las conexiones entre neuronas (rejilla)
         for i in range(self.rows):
             plt.plot(self.W[i,:,0], self.W[i,:,1], "k-")   # filas
         for j in range(self.cols):
             plt.plot(self.W[:,j,0], self.W[:,j,1], "k-")   # columnas
+
+        # 4. Dibujar los centroides de las neuronas
         plt.scatter(self.W[:,:,0], self.W[:,:,1], c="red", marker="x")
+
         plt.title(title)
         plt.axis("equal")
         plt.show()
+

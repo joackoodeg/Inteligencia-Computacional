@@ -9,6 +9,11 @@ import numpy as np
 import bitstring as bs
 import random
 import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+
+def f(X):
+    x, y = X
+    return ((x**2 + y**2)**0.25) * ((np.sin(50*(x**2 + y**2)**0.1 + 1)**2)+1)
 
 def funcion_aptitud(individuo):
     x = individuo.fenotipo()[0]
@@ -148,4 +153,6 @@ def algoritmo_genetico(cant_individuos, MaxGen, aptitudRequerida, sizeGen=32):
 
 if __name__ == "__main__":
     solucion = algoritmo_genetico(cant_individuos=100,MaxGen=500,aptitudRequerida=float('inf'),sizeGen=64)
-    print("Mejor solucion encontrada: x=", solucion.fenotipo()[0]," , y=",solucion.fenotipo()[1] , " con aptitud: ", solucion.evaluar())
+    print("Mejor solucion encontrada: x=", solucion.fenotipo()[0]," , y=",solucion.fenotipo()[1] , " con aptitud: ", solucion.evaluar(),"\n")
+    res = minimize(f, [0,0], method='Nelder-Mead', bounds=[(-100, 100), (-100, 100)], options={'xatol': 1e-8, 'disp': True})
+    print("Solucion por gradiente descendiente: x=", res.x, " , y=",res.x , " con valor: ", res.fun)

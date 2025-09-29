@@ -44,10 +44,8 @@ def funcion_aptitud(individuo):
 
     exactitud = accuracy_score(y_test, y_pred)
     
-    #Aptitud
-    alpha = 0.1
-    total_caracteristicas = x_train.shape[1]
-    f = exactitud - alpha * (len(caracteristicas_seleccionadas) / total_caracteristicas) #AJUSTAR 
+
+    f = exactitud/(len(caracteristicas_seleccionadas)) #AJUSTAR 
 
     return  f
 
@@ -62,7 +60,7 @@ def random_gen(tam=32):
     bits = bs.BitArray(tam) #cadena de 0's de tamaño tam
 
     #Selecciono 20 posiciones al azar para poner un 1
-    k=20
+    k=10
     posiciones = random.sample(range(7129), k)
     for pos in posiciones:
         bits[pos] = 1
@@ -148,7 +146,8 @@ class poblacion:
             for indGen in range(self.proxGeneracion[indHijo].genSize):
                 if random.random() < prob_mut:
                     self.proxGeneracion[indHijo].genotipo[indGen] = not self.proxGeneracion[indHijo].genotipo[indGen]
-        
+                    #break #Solo muta un bit por individuo
+    #Si dejo q muten varios bits por individuo, la mutacion es muy agresiva y no converge
 
     def nuevaGeneracion(self): #Reemplaza la generacion actual por la nueva generacion
         self.actualGeneracion = self.proxGeneracion #Reemplazo total
@@ -169,7 +168,7 @@ def algoritmo_genetico(cant_individuos, MaxGen, aptitudRequerida, sizeGen=32):
             progenitores = P.seleccion()
 
             P.cruza(progenitores)
-            P.mutacion(prob_mut=0.01)
+            P.mutacion(prob_mut=1/7129) #Probabilidad de mutacion 1/sizeGen
 
             P.nuevaGeneracion()
             

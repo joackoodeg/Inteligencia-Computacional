@@ -9,6 +9,10 @@ import numpy as np
 import bitstring as bs
 import random
 import matplotlib.pyplot as plt
+from scipy.optimize import minimize_scalar
+
+def f(x):
+    return (-x * np.sin(np.abs(x)))
 
 def funcion_aptitud(individuo):
     fenotipo = individuo.fenotipo()
@@ -139,4 +143,6 @@ def algoritmo_genetico(cant_individuos, MaxGen, aptitudRequerida, sizeGen=32):
 
 if __name__ == "__main__":
     solucion = algoritmo_genetico(cant_individuos=100,MaxGen=500,aptitudRequerida=float('inf'),sizeGen=32)
-    print("Mejor solucion encontrada: ", solucion.fenotipo(), " con aptitud: ", solucion.evaluar())
+    print("Mejor solucion encontrada: ", solucion.fenotipo(), " con aptitud: ", solucion.evaluar(),"\n")
+    res = minimize_scalar(f, bounds=(-512, 512), method='bounded')
+    print("Solucion por gradiente descendiente: x=", res.x, " , y=",res.x , " con valor: ", res.fun)

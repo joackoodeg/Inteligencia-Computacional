@@ -12,7 +12,7 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 
 df_train = pd.read_csv('leukemia_train.csv')
 x_train = df_train.iloc[:, :-1]
@@ -38,14 +38,13 @@ def funcion_aptitud(individuo):
     x_train_sel = x_train.iloc[:, caracteristicas_seleccionadas].to_numpy()
     x_test_sel = x_test.iloc[:, caracteristicas_seleccionadas].to_numpy()
 
-    clasificador = MLPClassifier(hidden_layer_sizes=(10,), max_iter=100)
+    clasificador = MLPClassifier(hidden_layer_sizes=(10,), max_iter=50, random_state=42)
     clasificador.fit(x_train_sel, y_train)
     y_pred = clasificador.predict(x_test_sel)
 
-    exactitud = accuracy_score(y_test, y_pred)
-    
+    metrica = f1_score(y_test, y_pred) #Use f1 por la importancia de minimizar falsos negativos (gente con cancer que se clasifica como sana)
 
-    f = exactitud/(len(caracteristicas_seleccionadas)) #AJUSTAR 
+    f = metrica
 
     return  f
 
@@ -146,8 +145,6 @@ class poblacion:
             for indGen in range(self.proxGeneracion[indHijo].genSize):
                 if random.random() < prob_mut:
                     self.proxGeneracion[indHijo].genotipo[indGen] = not self.proxGeneracion[indHijo].genotipo[indGen]
-                    #break #Solo muta un bit por individuo
-    #Si dejo q muten varios bits por individuo, la mutacion es muy agresiva y no converge
 
     def nuevaGeneracion(self): #Reemplaza la generacion actual por la nueva generacion
         self.actualGeneracion = self.proxGeneracion #Reemplazo total
@@ -186,5 +183,5 @@ def algoritmo_genetico(cant_individuos, MaxGen, aptitudRequerida, sizeGen=32):
 ####################################################################################################################
 
 if __name__ == "__main__":
-    solucion = algoritmo_genetico(cant_individuos=100,MaxGen=50,aptitudRequerida=float('inf'),sizeGen=7129)
+    solucion = algoritmo_genetico(cant_individuos=200,MaxGen=50,aptitudRequerida=float('inf'),sizeGen=7129) #Me tardo como 3-4min en correr
     print("Mejor solucion encontrada: Columnas = ", solucion.fenotipo(), " con aptitud: ", solucion.evaluar())

@@ -63,17 +63,17 @@ class poblacion:
         aptitudes = [self.actualGeneracion[i].evaluar() for i in range(len(self.actualGeneracion))]
         return np.argmax(aptitudes)
 
-    def seleccion(self): #Seleccion por ventana deslizante N? padres
+    def seleccion(self): #Seleccion por ventana deslizante de N padres
         progenitores = []
         aptitudes = [self.actualGeneracion[i].evaluar() for i in range(len(self.actualGeneracion))]
         generacionOrdenada = [x for _, x in sorted(zip(aptitudes, self.actualGeneracion), key=lambda t: t[0], reverse=True)]
 
         for extremoVentana in range(1,len(generacionOrdenada)): #Ventanas de seleccion
             indPadre = np.random.randint(0,extremoVentana)
-            progenitores.append(generacionOrdenada[indPadre]) #devuelve N o N-1?
+            progenitores.append(generacionOrdenada[indPadre]) #devuelve N-1
         
         indPadre = np.random.randint(0,len(generacionOrdenada)) 
-        progenitores.append(generacionOrdenada[indPadre])
+        progenitores.append(generacionOrdenada[indPadre]) #por eso tome otro padre aca
         print("Cantidad de progenitores seleccionados: ", len(progenitores))
         return progenitores
 
